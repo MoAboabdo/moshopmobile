@@ -1,0 +1,137 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ShopApp.Mobile.ViewModels"
+             xmlns:dto="clr-namespace:ShopApp.Mobile.DTOs"
+             x:Class="ShopApp.Mobile.Views.CartPage"
+             x:DataType="vm:CartViewModel"
+             Title="My Cart">
+
+    <Grid RowDefinitions="*,Auto">
+
+        <RefreshView Grid.Row="0"
+                     Command="{Binding LoadCartCommand}"
+                     IsRefreshing="{Binding IsBusy}">
+            <CollectionView ItemsSource="{Binding Items}">
+
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="16">
+                        <Label Text="🛒" FontSize="64" HorizontalOptions="Center" />
+                        <Label Text="Your cart is empty" FontSize="18" HorizontalOptions="Center"
+                               TextColor="{AppThemeBinding Light=#94A3B8, Dark=#475569}" />
+                        <Label Text="Add some products to get started!"
+                               FontSize="14" HorizontalOptions="Center"
+                               TextColor="{AppThemeBinding Light=#CBD5E1, Dark=#475569}" />
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="dto:CartItemDto">
+                        <Frame Margin="12,6" CornerRadius="12" HasShadow="True"
+                               BackgroundColor="{AppThemeBinding Light=White, Dark=#1E293B}">
+                            <Grid ColumnDefinitions="80,*,Auto" ColumnSpacing="12">
+
+                                <!-- Product image -->
+                                <Image Grid.Column="0"
+                                       Source="{Binding ProductImageUrl}"
+                                       HeightRequest="72" WidthRequest="72"
+                                       Aspect="AspectFill">
+                                    <Image.Clip>
+                                        <RoundRectangleGeometry Rect="0,0,72,72" CornerRadius="8" />
+                                    </Image.Clip>
+                                </Image>
+
+                                <!-- Name / price / subtotal -->
+                                <VerticalStackLayout Grid.Column="1" Spacing="3" VerticalOptions="Center">
+                                    <Label Text="{Binding ProductName}"
+                                           FontAttributes="Bold" FontSize="14"
+                                           TextColor="{AppThemeBinding Light=#1E293B, Dark=#F1F5F9}"
+                                           MaxLines="2" LineBreakMode="TailTruncation" />
+                                    <Label Text="{Binding Price, StringFormat='{0:C} each'}"
+                                           FontSize="12"
+                                           TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}" />
+                                    <Label Text="{Binding Subtotal, StringFormat='Total: {0:C}'}"
+                                           FontAttributes="Bold" FontSize="14"
+                                           TextColor="#6366F1" />
+                                </VerticalStackLayout>
+
+                                <!-- Quantity +/- and remove -->
+                                <VerticalStackLayout Grid.Column="2" Spacing="6" VerticalOptions="Center">
+
+                                    <!-- Quantity controls -->
+                                    <HorizontalStackLayout Spacing="4" HorizontalOptions="Center">
+                                        <Button Text="−"
+                                                WidthRequest="32" HeightRequest="32"
+                                                FontSize="18" FontAttributes="Bold"
+                                                CornerRadius="8"
+                                                BackgroundColor="#EEF2FF" TextColor="#6366F1"
+                                                Padding="0"
+                                                CommandParameter="{Binding .}"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CartViewModel}}, Path=DecreaseQuantityCommand}" />
+
+                                        <Label Text="{Binding Quantity}"
+                                               FontSize="15" FontAttributes="Bold"
+                                               WidthRequest="28"
+                                               HorizontalTextAlignment="Center"
+                                               VerticalOptions="Center"
+                                               TextColor="{AppThemeBinding Light=#1E293B, Dark=#F1F5F9}" />
+
+                                        <Button Text="+"
+                                                WidthRequest="32" HeightRequest="32"
+                                                FontSize="18" FontAttributes="Bold"
+                                                CornerRadius="8"
+                                                BackgroundColor="#EEF2FF" TextColor="#6366F1"
+                                                Padding="0"
+                                                CommandParameter="{Binding .}"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CartViewModel}}, Path=IncreaseQuantityCommand}" />
+                                    </HorizontalStackLayout>
+
+                                    <!-- Remove -->
+                                    <Button Text="Remove"
+                                            FontSize="11" HeightRequest="28"
+                                            CornerRadius="6"
+                                            BackgroundColor="#FEE2E2" TextColor="#DC2626"
+                                            CommandParameter="{Binding .}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CartViewModel}}, Path=RemoveItemCommand}" />
+                                </VerticalStackLayout>
+
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+
+        <!-- Error -->
+        <Frame Grid.Row="0"
+               IsVisible="{Binding HasError}"
+               BackgroundColor="#FEF2F2" BorderColor="#FCA5A5"
+               CornerRadius="8" Padding="12" Margin="12"
+               VerticalOptions="End">
+            <Label Text="{Binding ErrorMessage}" TextColor="#DC2626" FontSize="14" />
+        </Frame>
+
+        <!-- Checkout bar -->
+        <Frame Grid.Row="1"
+               BackgroundColor="{AppThemeBinding Light=White, Dark=#1E293B}"
+               HasShadow="True" Padding="16,12" CornerRadius="0">
+            <Grid ColumnDefinitions="*,Auto">
+                <VerticalStackLayout Grid.Column="0">
+                    <Label Text="Total" FontSize="13"
+                           TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}" />
+                    <Label Text="{Binding Total, StringFormat='{0:C}'}"
+                           FontSize="26" FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light=#1E293B, Dark=#F1F5F9}" />
+                </VerticalStackLayout>
+                <Button Grid.Column="1"
+                        Text="Checkout 🛍️"
+                        Command="{Binding CheckoutCommand}"
+                        IsEnabled="{Binding IsNotBusy}"
+                        BackgroundColor="#6366F1" TextColor="White"
+                        CornerRadius="12" HeightRequest="52"
+                        Padding="20,0" FontAttributes="Bold" FontSize="15" />
+            </Grid>
+        </Frame>
+
+    </Grid>
+</ContentPage>

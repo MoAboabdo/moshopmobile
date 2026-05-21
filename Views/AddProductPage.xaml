@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ShopApp.Mobile.ViewModels"
+             x:Class="ShopApp.Mobile.Views.AddProductPage"
+             x:DataType="vm:AddProductViewModel"
+             Title="Add Product">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="14">
+
+            <Frame IsVisible="{Binding HasError}" BackgroundColor="#FEF2F2"
+                   BorderColor="#FCA5A5" CornerRadius="8" Padding="12">
+                <Label Text="{Binding ErrorMessage}" TextColor="#DC2626" FontSize="14" />
+            </Frame>
+
+            <Label Text="Product Name" FontAttributes="Bold" FontSize="14"
+                   TextColor="{AppThemeBinding Light=#374151, Dark=#D1D5DB}" />
+            <Frame BorderColor="{AppThemeBinding Light=#E2E8F0, Dark=#334155}"
+                   CornerRadius="10" Padding="4"
+                   BackgroundColor="{AppThemeBinding Light=White, Dark=#1E293B}">
+                <Entry Text="{Binding Name}" Placeholder="e.g. Wireless Mouse" />
+            </Frame>
+
+            <Label Text="Description" FontAttributes="Bold" FontSize="14"
+                   TextColor="{AppThemeBinding Light=#374151, Dark=#D1D5DB}" />
+            <Frame BorderColor="{AppThemeBinding Light=#E2E8F0, Dark=#334155}"
+                   CornerRadius="10" Padding="4"
+                   BackgroundColor="{AppThemeBinding Light=White, Dark=#1E293B}">
+                <Editor Text="{Binding Description}" Placeholder="Describe the product..."
+                        HeightRequest="90" AutoSize="TextChanges" />
+            </Frame>
+
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                <VerticalStackLayout Grid.Column="0" Spacing="6">
+                    <Label Text="Price ($)" FontAttributes="Bold" FontSize="14"
+                           TextColor="{AppThemeBinding Light=#374151, Dark=#D1D5DB}" />
+                    <Frame BorderColor="{AppThemeBinding Light=#E2E8F0, Dark=#334155}"
+                           CornerRadius="10" Padding="4"
+                           BackgroundColor="{AppThemeBinding Light=White, Dark=#1E293B}">
+                        <Entry Text="{Binding PriceText}" Placeholder="0.00" Keyboard="Numeric" />
+                    </Frame>
+                </VerticalStackLayout>
+                <VerticalStackLayout Grid.Column="1" Spacing="6">
+                    <Label Text="Quantity" FontAttributes="Bold" FontSize="14"
+                           TextColor="{AppThemeBinding Light=#374151, Dark=#D1D5DB}" />
+                    <Frame BorderColor="{AppThemeBinding Light=#E2E8F0, Dark=#334155}"
+                           CornerRadius="10" Padding="4"
+                           BackgroundColor="{AppThemeBinding Light=White, Dark=#1E293B}">
+                        <Entry Text="{Binding QuantityText}" Placeholder="0" Keyboard="Numeric" />
+                    </Frame>
+                </VerticalStackLayout>
+            </Grid>
+
+            <Label Text="Category" FontAttributes="Bold" FontSize="14"
+                   TextColor="{AppThemeBinding Light=#374151, Dark=#D1D5DB}" />
+            <Frame BorderColor="{AppThemeBinding Light=#E2E8F0, Dark=#334155}"
+                   CornerRadius="10" Padding="4"
+                   BackgroundColor="{AppThemeBinding Light=White, Dark=#1E293B}">
+                <Entry Text="{Binding Category}" Placeholder="e.g. Electronics" />
+            </Frame>
+
+            <Label Text="Image URL (optional)" FontAttributes="Bold" FontSize="14"
+                   TextColor="{AppThemeBinding Light=#374151, Dark=#D1D5DB}" />
+            <Frame BorderColor="{AppThemeBinding Light=#E2E8F0, Dark=#334155}"
+                   CornerRadius="10" Padding="4"
+                   BackgroundColor="{AppThemeBinding Light=White, Dark=#1E293B}">
+                <Entry Text="{Binding ImageUrl}" Placeholder="https://..." Keyboard="Url" />
+            </Frame>
+
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="12" Margin="0,8,0,0">
+                <Button Grid.Column="0"
+                        Text="Cancel"
+                        Command="{Binding CancelCommand}"
+                        BackgroundColor="{AppThemeBinding Light=#F1F5F9, Dark=#1E293B}"
+                        TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}"
+                        CornerRadius="12" HeightRequest="50" FontAttributes="Bold" />
+                <Button Grid.Column="1"
+                        Text="Create Product"
+                        Command="{Binding SaveCommand}"
+                        IsEnabled="{Binding IsNotBusy}"
+                        BackgroundColor="#6366F1" TextColor="White"
+                        CornerRadius="12" HeightRequest="50" FontAttributes="Bold" />
+            </Grid>
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"
+                               Color="#6366F1" HorizontalOptions="Center" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

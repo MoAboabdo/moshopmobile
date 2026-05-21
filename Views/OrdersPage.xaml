@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ShopApp.Mobile.ViewModels"
+             xmlns:dto="clr-namespace:ShopApp.Mobile.DTOs"
+             x:Class="ShopApp.Mobile.Views.OrdersPage"
+             x:DataType="vm:OrdersViewModel"
+             Title="My Orders">
+
+    <Grid RowDefinitions="*">
+
+        <RefreshView Command="{Binding LoadOrdersCommand}"
+                     IsRefreshing="{Binding IsBusy}">
+            <CollectionView ItemsSource="{Binding Orders}" Margin="12">
+
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="16">
+                        <Label Text="📋" FontSize="64" HorizontalOptions="Center" />
+                        <Label Text="No orders yet" FontSize="18" HorizontalOptions="Center"
+                               TextColor="{AppThemeBinding Light=#94A3B8, Dark=#475569}" />
+                        <Label Text="Place your first order from the cart"
+                               FontSize="14" HorizontalOptions="Center"
+                               TextColor="{AppThemeBinding Light=#CBD5E1, Dark=#475569}" />
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="dto:OrderDto">
+                        <Frame Margin="0,0,0,12" CornerRadius="14" HasShadow="True"
+                               BackgroundColor="{AppThemeBinding Light=White, Dark=#1E293B}">
+                            <!-- FIX: TapGestureRecognizer on the Frame so the whole row is tappable -->
+                            <Frame.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    CommandParameter="{Binding .}"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:OrdersViewModel}}, Path=ViewOrderCommand}" />
+                            </Frame.GestureRecognizers>
+
+                            <Grid ColumnDefinitions="*,Auto">
+                                <VerticalStackLayout Grid.Column="0" Spacing="5">
+                                    <Label Text="{Binding Id, StringFormat='Order #{0}'}"
+                                           FontAttributes="Bold" FontSize="17"
+                                           TextColor="{AppThemeBinding Light=#1E293B, Dark=#F1F5F9}" />
+                                    <Label Text="{Binding CreatedAt, StringFormat='{0:MMM dd, yyyy  hh:mm tt}'}"
+                                           FontSize="12"
+                                           TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}" />
+                                    <Label Text="{Binding TotalPrice, StringFormat='{0:C}'}"
+                                           FontAttributes="Bold" FontSize="20"
+                                           TextColor="#6366F1" />
+                                    <Label Text="Tap to view details →"
+                                           FontSize="11" TextColor="#94A3B8" />
+                                </VerticalStackLayout>
+
+                                <!-- Status badge -->
+                                <Frame Grid.Column="1"
+                                       VerticalOptions="Center"
+                                       Padding="10,6" CornerRadius="8"
+                                       BackgroundColor="#6366F1">
+                                    <Label Text="{Binding Status}"
+                                           FontSize="12" FontAttributes="Bold"
+                                           TextColor="White" />
+                                </Frame>
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+
+    </Grid>
+</ContentPage>

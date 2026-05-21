@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ShopApp.Mobile.ViewModels"
+             xmlns:dto="clr-namespace:ShopApp.Mobile.DTOs"
+             x:Class="ShopApp.Mobile.Views.OrderDetailPage"
+             x:DataType="vm:OrderDetailViewModel"
+             Title="Order Details">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="16">
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"
+                               Color="#6366F1" HorizontalOptions="Center" />
+
+            <VerticalStackLayout IsVisible="{Binding IsNotBusy}" Spacing="16">
+
+                <!-- Order Header -->
+                <Frame BackgroundColor="{AppThemeBinding Light=White, Dark=#1E293B}" CornerRadius="12">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="{Binding Order.Id, StringFormat='Order #{0}'}"
+                               FontSize="22" FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light=#1E293B, Dark=#F1F5F9}" />
+                        <Label Text="{Binding Order.CreatedAt, StringFormat='Placed on {0:MMMM dd, yyyy}'}"
+                               FontSize="14" TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}" />
+                        <Frame Padding="10,6" CornerRadius="8" BackgroundColor="#EEF2FF" HorizontalOptions="Start">
+                            <Label Text="{Binding Order.Status}" TextColor="#6366F1" FontAttributes="Bold" />
+                        </Frame>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Order Items -->
+                <Label Text="Items" FontSize="18" FontAttributes="Bold"
+                       TextColor="{AppThemeBinding Light=#1E293B, Dark=#F1F5F9}" />
+
+                <CollectionView ItemsSource="{Binding Order.Items}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="dto:OrderItemDto">
+                            <Frame Margin="0,0,0,8" CornerRadius="10"
+                                   BackgroundColor="{AppThemeBinding Light=White, Dark=#1E293B}">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                        <Label Text="{Binding ProductName}" FontAttributes="Bold" FontSize="14"
+                                               TextColor="{AppThemeBinding Light=#1E293B, Dark=#F1F5F9}" />
+                                        <Label Text="{Binding Quantity, StringFormat='Qty: {0}'}" FontSize="13"
+                                               TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}" />
+                                        <Label Text="{Binding UnitPrice, StringFormat='{0:C} each'}" FontSize="13"
+                                               TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}" />
+                                    </VerticalStackLayout>
+                                    <Label Grid.Column="1" Text="{Binding Subtotal, StringFormat='{0:C}'}"
+                                           FontAttributes="Bold" FontSize="16" TextColor="#6366F1"
+                                           VerticalOptions="Center" />
+                                </Grid>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <!-- Total -->
+                <Frame BackgroundColor="#EEF2FF" CornerRadius="12">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Grid.Column="0" Text="Order Total" FontSize="18" FontAttributes="Bold"
+                               TextColor="#6366F1" />
+                        <Label Grid.Column="1" Text="{Binding Order.TotalPrice, StringFormat='{0:C}'}"
+                               FontSize="22" FontAttributes="Bold" TextColor="#6366F1" />
+                    </Grid>
+                </Frame>
+
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

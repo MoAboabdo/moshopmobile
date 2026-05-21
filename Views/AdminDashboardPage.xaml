@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ShopApp.Mobile.ViewModels"
+             x:Class="ShopApp.Mobile.Views.AdminDashboardPage"
+             x:DataType="vm:AdminDashboardViewModel"
+             Title="Admin Dashboard">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="16">
+
+            <Label Text="Admin Dashboard"
+                   FontSize="28" FontAttributes="Bold"
+                   TextColor="{AppThemeBinding Light=#1E293B, Dark=#F1F5F9}" />
+            <Label Text="Manage your application"
+                   FontSize="15"
+                   TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}"
+                   Margin="0,0,0,8" />
+
+            <!-- FIX: each card uses a Button so the full card surface is tappable -->
+            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto"
+                  ColumnSpacing="12" RowSpacing="12">
+
+                <!-- Users -->
+                <Frame Grid.Row="0" Grid.Column="0"
+                    BackgroundColor="#EEF2FF" CornerRadius="16" Padding="0"
+                    HasShadow="True">
+                    <Frame.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding GoToUsersCommand}" />
+                    </Frame.GestureRecognizers>
+                    <VerticalStackLayout Spacing="6" HorizontalOptions="Center"
+                         VerticalOptions="Center" Padding="12">
+                        <Label Text="👥" FontSize="38" HorizontalOptions="Center" />
+                        <Label Text="Users" FontAttributes="Bold" FontSize="16"
+                            TextColor="#6366F1" HorizontalOptions="Center" />
+                        <Label Text="Manage users &amp; roles" FontSize="11"
+                            TextColor="#818CF8" HorizontalOptions="Center"
+                            HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Products -->
+                <Frame Grid.Row="0" Grid.Column="1"
+                       BackgroundColor="#F0FDF4" CornerRadius="16" Padding="0"
+                       HasShadow="True">
+                    <Frame.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding GoToProductsCommand}" />
+                    </Frame.GestureRecognizers>
+                    <VerticalStackLayout Spacing="6" HorizontalOptions="Center"
+                                         VerticalOptions="Center" Padding="12">
+                        <Label Text="📦" FontSize="38" HorizontalOptions="Center" />
+                        <Label Text="Products" FontAttributes="Bold" FontSize="16"
+                               TextColor="#059669" HorizontalOptions="Center" />
+                        <Label Text="Create &amp; manage catalog" FontSize="11"
+                               TextColor="#34D399" HorizontalOptions="Center"
+                               HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Orders -->
+                <Frame Grid.Row="1" Grid.Column="0"
+                       BackgroundColor="#FFF7ED" CornerRadius="16" Padding="0"
+                       HasShadow="True">
+                    <Frame.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding GoToOrdersCommand}" />
+                    </Frame.GestureRecognizers>
+                    <VerticalStackLayout Spacing="6" HorizontalOptions="Center"
+                                         VerticalOptions="Center" Padding="12">
+                        <Label Text="🛒" FontSize="38" HorizontalOptions="Center" />
+                        <Label Text="Orders" FontAttributes="Bold" FontSize="16"
+                               TextColor="#D97706" HorizontalOptions="Center" />
+                        <Label Text="View all orders" FontSize="11"
+                               TextColor="#FCD34D" HorizontalOptions="Center"
+                               HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Permissions -->
+                <Frame Grid.Row="1" Grid.Column="1"
+                       BackgroundColor="#FDF2F8" CornerRadius="16" Padding="0"
+                       HasShadow="True">
+                    <Frame.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding GoToPermissionsCommand}" />
+                    </Frame.GestureRecognizers>
+                    <VerticalStackLayout Spacing="6" HorizontalOptions="Center"
+                                         VerticalOptions="Center" Padding="12">
+                        <Label Text="🔐" FontSize="38" HorizontalOptions="Center" />
+                        <Label Text="Permissions" FontAttributes="Bold" FontSize="16"
+                               TextColor="#9333EA" HorizontalOptions="Center" />
+                        <Label Text="Roles &amp; access control" FontSize="11"
+                               TextColor="#C084FC" HorizontalOptions="Center"
+                               HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+                </Frame>
+
+            </Grid>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

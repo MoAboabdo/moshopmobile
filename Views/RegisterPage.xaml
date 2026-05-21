@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ShopApp.Mobile.ViewModels"
+             x:Class="ShopApp.Mobile.Views.RegisterPage"
+             x:DataType="vm:RegisterViewModel"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{AppThemeBinding Light=#F8FAFC, Dark=#0F172A}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="32,40,32,32" Spacing="16">
+
+            <VerticalStackLayout Spacing="8" Margin="0,0,0,16">
+                <Label Text="🛍️" FontSize="48" HorizontalOptions="Center" />
+                <Label Text="Create Account" FontSize="28" FontAttributes="Bold"
+                       TextColor="{AppThemeBinding Light=#1E293B, Dark=#F1F5F9}"
+                       HorizontalOptions="Center" />
+            </VerticalStackLayout>
+
+            <Frame IsVisible="{Binding HasError}" BackgroundColor="#FEF2F2"
+                   BorderColor="#FCA5A5" CornerRadius="8" Padding="12">
+                <Label Text="{Binding ErrorMessage}" TextColor="#DC2626" FontSize="14" />
+            </Frame>
+
+            <VerticalStackLayout Spacing="6">
+                <Label Text="Username" FontAttributes="Bold" FontSize="14"
+                       TextColor="{AppThemeBinding Light=#374151, Dark=#D1D5DB}" />
+                <Frame BorderColor="{AppThemeBinding Light=#E2E8F0, Dark=#334155}"
+                       CornerRadius="10" Padding="4" BackgroundColor="{AppThemeBinding Light=White, Dark=#1E293B}">
+                    <Entry Text="{Binding Username}" Placeholder="Choose a username" />
+                </Frame>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="6">
+                <Label Text="Email" FontAttributes="Bold" FontSize="14"
+                       TextColor="{AppThemeBinding Light=#374151, Dark=#D1D5DB}" />
+                <Frame BorderColor="{AppThemeBinding Light=#E2E8F0, Dark=#334155}"
+                       CornerRadius="10" Padding="4" BackgroundColor="{AppThemeBinding Light=White, Dark=#1E293B}">
+                    <Entry Text="{Binding Email}" Placeholder="Enter your email" Keyboard="Email" />
+                </Frame>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="6">
+                <Label Text="Password" FontAttributes="Bold" FontSize="14"
+                       TextColor="{AppThemeBinding Light=#374151, Dark=#D1D5DB}" />
+                <Frame BorderColor="{AppThemeBinding Light=#E2E8F0, Dark=#334155}"
+                       CornerRadius="10" Padding="4" BackgroundColor="{AppThemeBinding Light=White, Dark=#1E293B}">
+                    <Entry Text="{Binding Password}" IsPassword="True" Placeholder="Min 6 chars, 1 uppercase, 1 number" />
+                </Frame>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="6">
+                <Label Text="Confirm Password" FontAttributes="Bold" FontSize="14"
+                       TextColor="{AppThemeBinding Light=#374151, Dark=#D1D5DB}" />
+                <Frame BorderColor="{AppThemeBinding Light=#E2E8F0, Dark=#334155}"
+                       CornerRadius="10" Padding="4" BackgroundColor="{AppThemeBinding Light=White, Dark=#1E293B}">
+                    <Entry Text="{Binding ConfirmPassword}" IsPassword="True" Placeholder="Repeat password" />
+                </Frame>
+            </VerticalStackLayout>
+
+            <Button Text="Create Account" Command="{Binding RegisterCommand}"
+                    IsEnabled="{Binding IsNotBusy}"
+                    BackgroundColor="#6366F1" TextColor="White"
+                    CornerRadius="12" HeightRequest="52" FontSize="16" FontAttributes="Bold"
+                    Margin="0,8,0,0" />
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"
+                               Color="#6366F1" HorizontalOptions="Center" />
+
+            <HorizontalStackLayout HorizontalOptions="Center" Spacing="4">
+                <Label Text="Already have an account?" FontSize="14"
+                       TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}" VerticalOptions="Center" />
+                <Label Text="Login" FontSize="14" TextColor="#6366F1" FontAttributes="Bold">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding GoToLoginCommand}" />
+                    </Label.GestureRecognizers>
+                </Label>
+            </HorizontalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -1,0 +1,183 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ShopApp.Mobile.ViewModels"
+             xmlns:dto="clr-namespace:ShopApp.Mobile.DTOs"
+             x:Class="ShopApp.Mobile.Views.ProductListPage"
+             x:DataType="vm:ProductListViewModel"
+             Title="Products">
+
+    <Grid RowDefinitions="Auto,Auto,Auto,*,Auto">
+
+        <!-- Top bar: search + cart badge button -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Padding="12,8,12,0">
+            <SearchBar Grid.Column="0"
+                       Placeholder="Search products..."
+                       Text="{Binding SearchText}"
+                       SearchCommand="{Binding SearchCommand}" />
+
+            <!-- FIX: Cart button with badge -->
+            <Grid Grid.Column="1" WidthRequest="56" HeightRequest="56" Margin="8,0,0,0">
+                <Button Text="🛒"
+                        FontSize="22"
+                        BackgroundColor="Transparent"
+                        Command="{Binding GoToCartCommand}" />
+                <!-- Badge -->
+                <Frame IsVisible="{Binding HasCartItems}"
+                       BackgroundColor="#EF4444"
+                       BorderColor="#EF4444"
+                       CornerRadius="10"
+                       Padding="4,1"
+                       HorizontalOptions="End"
+                       VerticalOptions="Start"
+                       Margin="0,4,4,0"
+                       HeightRequest="20"
+                       WidthRequest="20">
+                    <Label Text="{Binding CartBadgeText}"
+                           TextColor="White"
+                           FontSize="11"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center" />
+                </Frame>
+            </Grid>
+        </Grid>
+
+        <!-- Add Product button (admin only) -->
+        <Button Grid.Row="1"
+                Text="+ Add New Product"
+                IsVisible="{Binding CanCreate}"
+                Command="{Binding AddProductCommand}"
+                BackgroundColor="#059669"
+                TextColor="White"
+                CornerRadius="10"
+                HeightRequest="40"
+                FontSize="14"
+                FontAttributes="Bold"
+                Margin="12,6,12,0" />
+
+        <!-- Category Filter -->
+        <CollectionView Grid.Row="2"
+                        ItemsSource="{Binding Categories}"
+                        SelectionMode="None"
+                        HeightRequest="48"
+                        Margin="12,4">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Horizontal" ItemSpacing="8" />
+            </CollectionView.ItemsLayout>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="x:String">
+                    <Frame Padding="12,6" CornerRadius="20"
+                           BorderColor="#6366F1"
+                           BackgroundColor="Transparent">
+                        <Label Text="{Binding .}" FontSize="13" TextColor="#6366F1">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    CommandParameter="{Binding .}"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ProductListViewModel}}, Path=FilterByCategoryCommand}" />
+                            </Label.GestureRecognizers>
+                        </Label>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- Product Grid -->
+        <RefreshView Grid.Row="3"
+                     Command="{Binding LoadProductsCommand}"
+                     IsRefreshing="{Binding IsBusy}">
+            <CollectionView ItemsSource="{Binding Products}" Margin="8">
+                <CollectionView.ItemsLayout>
+                    <GridItemsLayout Orientation="Vertical" Span="2"
+                                     HorizontalItemSpacing="8" VerticalItemSpacing="8" />
+                </CollectionView.ItemsLayout>
+
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="12">
+                        <Label Text="📦" FontSize="48" HorizontalOptions="Center" />
+                        <Label Text="No products found" FontSize="16" HorizontalOptions="Center"
+                               TextColor="{AppThemeBinding Light=#94A3B8, Dark=#475569}" />
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="dto:ProductDto">
+                        <Frame Padding="0" CornerRadius="12" HasShadow="True"
+                               BackgroundColor="{AppThemeBinding Light=White, Dark=#1E293B}">
+                            <Frame.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    CommandParameter="{Binding .}"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ProductListViewModel}}, Path=ViewProductCommand}" />
+                            </Frame.GestureRecognizers>
+
+                            <VerticalStackLayout>
+                                <!-- Product Image -->
+                                <Image Source="{Binding ImageUrl}"
+                                       HeightRequest="130"
+                                       Aspect="AspectFill" />
+
+                                <VerticalStackLayout Padding="10" Spacing="4">
+                                    <Label Text="{Binding Name}"
+                                           FontAttributes="Bold" FontSize="13"
+                                           MaxLines="2" LineBreakMode="TailTruncation"
+                                           TextColor="{AppThemeBinding Light=#1E293B, Dark=#F1F5F9}" />
+
+                                    <Label Text="{Binding Category}"
+                                           FontSize="11" TextColor="#6366F1" />
+
+                                    <Label Text="{Binding Price, StringFormat='{0:C}'}"
+                                           FontAttributes="Bold" FontSize="15"
+                                           TextColor="{AppThemeBinding Light=#059669, Dark=#34D399}" />
+
+                                    <!-- Add to Cart -->
+                                    <Button Text="Add to Cart"
+                                            FontSize="12" HeightRequest="34"
+                                            CornerRadius="8"
+                                            BackgroundColor="#6366F1" TextColor="White"
+                                            CommandParameter="{Binding .}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ProductListViewModel}}, Path=AddToCartCommand}" />
+
+                                    <!-- Admin buttons: Edit + Delete -->
+                                    <Grid ColumnDefinitions="*,*" ColumnSpacing="4"
+                                          IsVisible="{Binding Source={RelativeSource AncestorType={x:Type vm:ProductListViewModel}}, Path=CanEdit}">
+                                        <Button Grid.Column="0"
+                                                Text="✏️ Edit"
+                                                FontSize="11" HeightRequest="30"
+                                                CornerRadius="6"
+                                                BackgroundColor="#F59E0B" TextColor="White"
+                                                CommandParameter="{Binding .}"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ProductListViewModel}}, Path=EditProductCommand}" />
+                                        <Button Grid.Column="1"
+                                                Text="🗑 Delete"
+                                                FontSize="11" HeightRequest="30"
+                                                CornerRadius="6"
+                                                BackgroundColor="#EF4444" TextColor="White"
+                                                IsVisible="{Binding Source={RelativeSource AncestorType={x:Type vm:ProductListViewModel}}, Path=CanDelete}"
+                                                CommandParameter="{Binding .}"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ProductListViewModel}}, Path=DeleteProductCommand}" />
+                                    </Grid>
+                                </VerticalStackLayout>
+                            </VerticalStackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+
+        <!-- Pagination -->
+        <HorizontalStackLayout Grid.Row="4"
+                               HorizontalOptions="Center" Spacing="16" Padding="12">
+            <Button Text="◀ Prev"
+                    Command="{Binding PreviousPageCommand}"
+                    IsEnabled="{Binding HasPreviousPage}"
+                    BackgroundColor="#6366F1" TextColor="White" CornerRadius="8" />
+            <Label Text="{Binding CurrentPage, StringFormat='Page {0}'}"
+                   VerticalOptions="Center" FontSize="14" />
+            <Button Text="Next ▶"
+                    Command="{Binding NextPageCommand}"
+                    IsEnabled="{Binding HasNextPage}"
+                    BackgroundColor="#6366F1" TextColor="White" CornerRadius="8" />
+        </HorizontalStackLayout>
+
+    </Grid>
+</ContentPage>

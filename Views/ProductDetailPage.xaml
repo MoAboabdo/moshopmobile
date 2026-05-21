@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ShopApp.Mobile.ViewModels"
+             x:Class="ShopApp.Mobile.Views.ProductDetailPage"
+             x:DataType="vm:ProductDetailViewModel"
+             Title="{Binding Product.Name}">
+
+    <ScrollView>
+        <VerticalStackLayout Spacing="0">
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"
+                               Color="#6366F1" Margin="20" HorizontalOptions="Center" />
+
+            <!-- Product Image -->
+            <Image Source="{Binding Product.ImageUrl}" HeightRequest="280"
+                   Aspect="AspectFill" IsVisible="{Binding IsNotBusy}" />
+
+            <!-- Content -->
+            <VerticalStackLayout Padding="20" Spacing="16"
+                                 BackgroundColor="{AppThemeBinding Light=#F8FAFC, Dark=#0F172A}">
+
+                <!-- Category Badge -->
+                <Frame Padding="10,5" CornerRadius="6" BackgroundColor="#EEF2FF" HorizontalOptions="Start">
+                    <Label Text="{Binding Product.Category}" TextColor="#6366F1" FontSize="13" FontAttributes="Bold" />
+                </Frame>
+
+                <!-- Name & Price -->
+                <Label Text="{Binding Product.Name}" FontSize="24" FontAttributes="Bold"
+                       TextColor="{AppThemeBinding Light=#1E293B, Dark=#F1F5F9}" />
+                <Label Text="{Binding Product.Price, StringFormat='{0:C}'}"
+                       FontSize="30" FontAttributes="Bold"
+                       TextColor="{AppThemeBinding Light=#059669, Dark=#34D399}" />
+
+                <!-- Stock -->
+                <HorizontalStackLayout Spacing="8">
+                    <Label Text="In Stock:" FontSize="14"
+                           TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}" />
+                    <Label Text="{Binding Product.Quantity}" FontSize="14" FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light=#1E293B, Dark=#F1F5F9}" />
+                </HorizontalStackLayout>
+
+                <!-- Description -->
+                <Label Text="Description" FontSize="16" FontAttributes="Bold"
+                       TextColor="{AppThemeBinding Light=#1E293B, Dark=#F1F5F9}" />
+                <Label Text="{Binding Product.Description}" FontSize="14"
+                       TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}"
+                       LineBreakMode="WordWrap" />
+
+                <!-- Quantity Selector -->
+                <HorizontalStackLayout Spacing="16" VerticalOptions="Center">
+                    <Label Text="Quantity:" FontSize="15" FontAttributes="Bold" VerticalOptions="Center"
+                           TextColor="{AppThemeBinding Light=#374151, Dark=#D1D5DB}" />
+                    <Frame BorderColor="#E2E8F0" CornerRadius="8" Padding="4">
+                        <HorizontalStackLayout Spacing="8">
+                            <Button Text="-" WidthRequest="36" HeightRequest="36"
+                                    BackgroundColor="#EEF2FF" TextColor="#6366F1"
+                                    CornerRadius="6" FontSize="18"
+                                    Clicked="OnDecreaseQuantity" />
+                            <Label Text="{Binding Quantity}" FontSize="16" FontAttributes="Bold"
+                                   VerticalOptions="Center" WidthRequest="30" HorizontalTextAlignment="Center"
+                                   TextColor="{AppThemeBinding Light=#1E293B, Dark=#F1F5F9}" />
+                            <Button Text="+" WidthRequest="36" HeightRequest="36"
+                                    BackgroundColor="#EEF2FF" TextColor="#6366F1"
+                                    CornerRadius="6" FontSize="18"
+                                    Clicked="OnIncreaseQuantity" />
+                        </HorizontalStackLayout>
+                    </Frame>
+                </HorizontalStackLayout>
+
+                <!-- Add to Cart Button -->
+                <Button Text="Add to Cart 🛒" Command="{Binding AddToCartCommand}"
+                        IsEnabled="{Binding IsNotBusy}"
+                        BackgroundColor="#6366F1" TextColor="White"
+                        CornerRadius="14" HeightRequest="56" FontSize="17" FontAttributes="Bold"
+                        Margin="0,8,0,0" />
+
+                <!-- Error -->
+                <Frame IsVisible="{Binding HasError}" BackgroundColor="#FEF2F2"
+                       BorderColor="#FCA5A5" CornerRadius="8" Padding="12">
+                    <Label Text="{Binding ErrorMessage}" TextColor="#DC2626" />
+                </Frame>
+
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
