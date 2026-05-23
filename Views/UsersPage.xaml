@@ -54,6 +54,22 @@
                                                    TextColor="#6366F1" FontSize="11"
                                                    FontAttributes="Bold" />
                                         </Frame>
+                                        <FlexLayout BindableLayout.ItemsSource="{Binding Permissions}"
+            Wrap="Wrap" Direction="Row">
+                                            <BindableLayout.ItemTemplate>
+                                                <DataTemplate x:DataType="x:String">
+                                                    <Frame Padding="5,2" CornerRadius="5" Margin="0,2,4,2"
+                   BackgroundColor="#F0FDF4"
+                   BorderColor="#BBF7D0">
+                                                        <Label Text="{Binding .}"
+                       TextColor="#16A34A"
+                       FontSize="10"
+                       FontAttributes="Bold"/>
+                                                    </Frame>
+                                                </DataTemplate>
+                                            </BindableLayout.ItemTemplate>
+                                        </FlexLayout>
+
                                     </VerticalStackLayout>
                                 </Grid>
 

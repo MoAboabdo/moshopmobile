@@ -67,7 +67,7 @@
             </CollectionView.ItemsLayout>
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="x:String">
-                    <Frame Padding="12,6" CornerRadius="20"
+                    <Frame Padding="12,12" CornerRadius="20"
                            BorderColor="#6366F1"
                            BackgroundColor="Transparent">
                         <Label Text="{Binding .}" FontSize="13" TextColor="#6366F1">
@@ -84,8 +84,8 @@
 
         <!-- Product Grid -->
         <RefreshView Grid.Row="3"
-                     Command="{Binding LoadProductsCommand}"
-                     IsRefreshing="{Binding IsBusy}">
+                     Command="{Binding RefreshProductsCommand}"
+                     IsRefreshing="{Binding IsRefreshing}">
             <CollectionView ItemsSource="{Binding Products}" Margin="8">
                 <CollectionView.ItemsLayout>
                     <GridItemsLayout Orientation="Vertical" Span="2"

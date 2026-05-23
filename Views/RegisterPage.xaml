@@ -7,7 +7,7 @@
              Shell.NavBarIsVisible="False"
              BackgroundColor="{AppThemeBinding Light=#F8FAFC, Dark=#0F172A}">
 
-    <ScrollView>
+    <ScrollView >
         <VerticalStackLayout Padding="32,40,32,32" Spacing="16">
 
             <VerticalStackLayout Spacing="8" Margin="0,0,0,16">
@@ -27,7 +27,7 @@
                        TextColor="{AppThemeBinding Light=#374151, Dark=#D1D5DB}" />
                 <Frame BorderColor="{AppThemeBinding Light=#E2E8F0, Dark=#334155}"
                        CornerRadius="10" Padding="4" BackgroundColor="{AppThemeBinding Light=White, Dark=#1E293B}">
-                    <Entry Text="{Binding Username}" Placeholder="Choose a username" />
+                    <Entry Text="{Binding Username}" Placeholder="Choose a username" ReturnType="Next"/>
                 </Frame>
             </VerticalStackLayout>
 

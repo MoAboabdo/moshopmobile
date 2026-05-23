@@ -46,9 +46,10 @@ public partial class ProductListViewModel : BaseViewModel
 
         WeakReferenceMessenger.Default.Register<ProductsChangedMessage>(this, (_, _) =>
         {
-            MainThread.BeginInvokeOnMainThread(() =>
-                LoadProductsCommand.ExecuteAsync(null));
+            MainThread.BeginInvokeOnMainThread(async () =>
+                await ExecuteSilentAsync(FetchProductsAsync));
         });
+
     }
     public void Dispose()
     {
@@ -60,28 +61,7 @@ public partial class ProductListViewModel : BaseViewModel
     {
         await ExecuteAsync(async () =>
         {
-            var query = new ProductQueryDto
-            {
-                Search = string.IsNullOrWhiteSpace(SearchText) ? null : SearchText,
-                Category = string.IsNullOrWhiteSpace(SelectedCategory) ? null : SelectedCategory,
-                Page = CurrentPage,
-                PageSize = 10
-            };
-
-            var result = await _productApi.GetProductsAsync(query);
-            if (result?.Success == true && result.Data != null)
-            {
-                Products = new ObservableCollection<ProductDto>(result.Data.Items);
-                TotalPages = result.Data.TotalPages;
-                HasNextPage = CurrentPage < TotalPages;
-                HasPreviousPage = CurrentPage > 1;
-            }
-
-            var catResult = await _productApi.GetCategoriesAsync();
-            if (catResult?.Success == true && catResult.Data != null)
-                Categories = new ObservableCollection<string>(catResult.Data.Prepend("All"));
-
-            await RefreshCartBadgeAsync();
+            await FetchProductsAsync();
         });
     }
 
@@ -145,6 +125,41 @@ public partial class ProductListViewModel : BaseViewModel
         await Shell.Current.GoToAsync($"editproduct?id={product.Id}");
 
     [RelayCommand]
+    public async Task RefreshProductsAsync()
+    {
+        await ExecuteRefreshAsync(async () =>
+        {
+            await FetchProductsAsync();
+        });
+    }
+
+    private async Task FetchProductsAsync()
+    {
+        var query = new ProductQueryDto
+        {
+            Search = string.IsNullOrWhiteSpace(SearchText) ? null : SearchText,
+            Category = string.IsNullOrWhiteSpace(SelectedCategory) ? null : SelectedCategory,
+            Page = CurrentPage,
+            PageSize = 10
+        };
+
+        var result = await _productApi.GetProductsAsync(query);
+        if (result?.Success == true && result.Data != null)
+        {
+            Products = new ObservableCollection<ProductDto>(result.Data.Items);
+            TotalPages = result.Data.TotalPages;
+            HasNextPage = CurrentPage < TotalPages;
+            HasPreviousPage = CurrentPage > 1;
+        }
+
+        var catResult = await _productApi.GetCategoriesAsync();
+        if (catResult?.Success == true && catResult.Data != null)
+            Categories = new ObservableCollection<string>(catResult.Data.Prepend("All"));
+
+        await RefreshCartBadgeAsync();
+    }
+
+    [RelayCommand]
     private async Task DeleteProductAsync(ProductDto product)
     {
         var confirm = await Shell.Current.DisplayAlert(
@@ -158,8 +173,7 @@ public partial class ProductListViewModel : BaseViewModel
             var result = await _productApi.DeleteProductAsync(product.Id);
             if (result?.Success == true)
             {
-                await Shell.Current.DisplayAlert("Deleted", "Product deleted.", "OK");
-                await LoadProductsAsync();
+                await ExecuteSilentAsync(FetchProductsAsync);
             }
             else SetError(result?.Message ?? "Failed to delete.");
         });
@@ -598,9 +612,6 @@ public partial class AdminDashboardViewModel : BaseViewModel
     private async Task GoToOrdersAsync() =>
         await Shell.Current.GoToAsync("//orders");
 
-    [RelayCommand]
-    private async Task GoToPermissionsAsync() =>
-        await Shell.Current.GoToAsync("users");
 }
 
 // ─── Users (Admin) ────────────────────────────────────────────
@@ -630,6 +641,7 @@ public partial class UsersViewModel : BaseViewModel
             var p = await _userApi.GetPermissionsAsync();
             if (p?.Success == true && p.Data != null)
                 Permissions = new ObservableCollection<PermissionDto>(p.Data);
+
         });
     }
 
@@ -649,8 +661,12 @@ public partial class UsersViewModel : BaseViewModel
             var result = await _userApi.UpdateRoleAsync(user.Id, new UpdateUserRoleDto(role.Id));
             if (result?.Success == true)
             {
+                var updated = await _userApi.GetUserAsync(user.Id);
+                var idx = Users.IndexOf(user);
+                if (idx >= 0 && updated?.Data != null)
+                    Users[idx] = updated.Data;
+
                 await Shell.Current.DisplayAlert("Updated ✓", $"{user.Username} is now {selected}.", "OK");
-                await LoadUsersAsync();
             }
             else SetError(result?.Message ?? "Failed.");
         });
@@ -672,7 +688,14 @@ public partial class UsersViewModel : BaseViewModel
             var result = await _userApi.AssignPermissionsAsync(
                 user.Id, new AssignPermissionsDto(new List<int> { perm.Id }));
             if (result?.Success == true)
+            {
+                var updated = await _userApi.GetUserAsync(user.Id);
+                var idx = Users.IndexOf(user);
+                if (idx >= 0 && updated?.Data != null)
+                    Users[idx] = updated.Data;
+
                 await Shell.Current.DisplayAlert("Done ✓", $"\"{selected}\" granted to {user.Username}.", "OK");
+            }
             else
                 SetError(result?.Message ?? "Failed.");
         });

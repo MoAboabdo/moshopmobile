@@ -1,0 +1,27 @@
+﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ShopApp.Mobile.Views.LoadingPage"
+             Shell.FlyoutItemIsVisible="False"
+             BackgroundColor="{AppThemeBinding Light=White, Dark=#0F172A}">
+
+    <VerticalStackLayout HorizontalOptions="Center" 
+                         VerticalOptions="Center" 
+                         Spacing="20">
+
+        <Label Text="🛍️" 
+               FontSize="72" 
+               HorizontalOptions="Center"/>
+
+        <Label Text="Mohamed Shop"
+               FontSize="28"
+               FontAttributes="Bold"
+               HorizontalOptions="Center"
+               TextColor="#6366F1"/>
+
+        <ActivityIndicator IsRunning="True" 
+                           Color="#6366F1"
+                           WidthRequest="50"
+                           HeightRequest="50"/>
+    </VerticalStackLayout>
+
+</ContentPage>

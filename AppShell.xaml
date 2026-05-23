@@ -6,30 +6,49 @@
        Shell.FlyoutBehavior="Flyout"
        Title="ShopApp">
 
+    <ShellContent Route="loading"
+              ContentTemplate="{DataTemplate views:LoadingPage}"
+              Shell.FlyoutItemIsVisible="False" />
+
     <!-- Auth Routes (hidden from flyout) -->
     <ShellContent Route="login"    ContentTemplate="{DataTemplate views:LoginPage}"    Shell.FlyoutItemIsVisible="False" />
     <ShellContent Route="register" ContentTemplate="{DataTemplate views:RegisterPage}" Shell.FlyoutItemIsVisible="False" />
 
     <!-- Main Routes -->
-    <FlyoutItem Title="Products" Icon="products.png" Route="products">
+    <FlyoutItem Title="Products"  Route="products">
+        <FlyoutItem.Icon>
+            <FontImageSource Glyph="🛍️" Size="22"/>
+        </FlyoutItem.Icon>
         <ShellContent ContentTemplate="{DataTemplate views:ProductListPage}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Cart" Icon="cart.png" Route="cart">
+    <FlyoutItem Title="Cart"  Route="cart">
+        <FlyoutItem.Icon>
+            <FontImageSource Glyph="🛒" Size="22"/>
+        </FlyoutItem.Icon>
         <ShellContent ContentTemplate="{DataTemplate views:CartPage}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="My Orders" Icon="orders.png" Route="orders">
+    <FlyoutItem Title="My Orders"  Route="orders">
+        <FlyoutItem.Icon>
+            <FontImageSource Glyph="📦" Size="22"/>
+        </FlyoutItem.Icon>
         <ShellContent ContentTemplate="{DataTemplate views:OrdersPage}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Profile" Icon="profile.png" Route="profile">
+    <FlyoutItem Title="Profile"  Route="profile">
+        <FlyoutItem.Icon>
+            <FontImageSource Glyph="👤" Size="22"/>
+        </FlyoutItem.Icon>
         <ShellContent ContentTemplate="{DataTemplate views:ProfilePage}" />
     </FlyoutItem>
 
     <!-- Admin only — hidden by default, shown after login if role == Admin -->
-    <FlyoutItem Title="Admin Dashboard" Icon="admin.png" Route="admin"
+    <FlyoutItem Title="Admin Dashboard"  Route="admin"
                 x:Name="AdminFlyoutItem" IsVisible="False">
+        <FlyoutItem.Icon>
+            <FontImageSource Glyph="⚙️" Size="22"/>
+        </FlyoutItem.Icon>
         <ShellContent ContentTemplate="{DataTemplate views:AdminDashboardPage}" />
     </FlyoutItem>
 

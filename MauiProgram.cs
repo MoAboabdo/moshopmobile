@@ -34,6 +34,7 @@ public static class MauiProgram
             builder.Services.AddSingleton<ICartApiService, MockCartApiService>();
             builder.Services.AddSingleton<IOrderApiService, MockOrderApiService>();
             builder.Services.AddSingleton<IUserApiService, MockUserApiService>();
+            builder.Services.AddSingleton<IAuthStateService, MockAuthStateService>();
         } 
         else
         {
@@ -52,8 +53,8 @@ public static class MauiProgram
             builder.Services.AddScoped<IUserApiService, UserApiService>();
             builder.Services.AddSingleton<IMessenger>(WeakReferenceMessenger.Default);
 
-        }
         builder.Services.AddSingleton<IAuthStateService, AuthStateService>();
+        }
 
 
 

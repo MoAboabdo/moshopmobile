@@ -14,6 +14,10 @@ public partial class BaseViewModel : ObservableObject
     [ObservableProperty]
     private bool _hasError;
 
+    [ObservableProperty]
+    private bool _isRefreshing;
+
+
     public bool IsNotBusy => !IsBusy;
 
     protected void SetError(string message)
@@ -44,6 +48,39 @@ public partial class BaseViewModel : ObservableObject
         finally
         {
             IsBusy = false;
+        }
+    }
+
+    protected async Task ExecuteSilentAsync(Func<Task> action)
+    {
+        try
+        {
+            ClearError();
+            await action();
+        }
+        catch (Exception ex)
+        {
+            SetError(ex.Message);
+        }
+    }
+
+    protected async Task ExecuteRefreshAsync(Func<Task> action)
+    {
+        if (IsRefreshing) return;
+        try
+        {
+            IsRefreshing = true;
+            ClearError();
+            await action();
+        }
+        catch (Exception ex)
+        {
+            SetError(ex.Message);
+        }
+        finally
+        {
+            await Task.Delay(300);
+            MainThread.BeginInvokeOnMainThread(() => IsRefreshing = false);
         }
     }
 }

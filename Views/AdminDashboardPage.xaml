@@ -33,7 +33,7 @@
                         <Label Text="👥" FontSize="38" HorizontalOptions="Center" />
                         <Label Text="Users" FontAttributes="Bold" FontSize="16"
                             TextColor="#6366F1" HorizontalOptions="Center" />
-                        <Label Text="Manage users &amp; roles" FontSize="11"
+                        <Label Text="Manage users &amp; roles &amp; Permissions" FontSize="11"
                             TextColor="#818CF8" HorizontalOptions="Center"
                             HorizontalTextAlignment="Center" />
                     </VerticalStackLayout>
@@ -76,7 +76,7 @@
                 </Frame>
 
                 <!-- Permissions -->
-                <Frame Grid.Row="1" Grid.Column="1"
+                <!--<Frame Grid.Row="1" Grid.Column="1"
                        BackgroundColor="#FDF2F8" CornerRadius="16" Padding="0"
                        HasShadow="True">
                     <Frame.GestureRecognizers>
@@ -91,7 +91,7 @@
                                TextColor="#C084FC" HorizontalOptions="Center"
                                HorizontalTextAlignment="Center" />
                     </VerticalStackLayout>
-                </Frame>
+                </Frame>-->
 
             </Grid>
 

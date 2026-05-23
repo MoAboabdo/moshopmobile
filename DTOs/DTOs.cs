@@ -28,7 +28,7 @@ public record UpdateCartItemDto(int Quantity);
 public record OrderDto(int Id, decimal TotalPrice, string Status, DateTime CreatedAt, List<OrderItemDto> Items);
 public record OrderItemDto(int ProductId, string ProductName, int Quantity, decimal UnitPrice, decimal Subtotal);
 
-public record UserDto(int Id, string Username, string Email, string Role, bool IsActive, DateTime CreatedAt);
+public record UserDto(int Id, string Username, string Email, string Role, bool IsActive, DateTime CreatedAt, List<string>? Permissions = null);
 public record RoleDto(int Id, string Name, List<string> Permissions);
 public record PermissionDto(int Id, string Name, string Description);
 public record UpdateUserRoleDto(int RoleId);

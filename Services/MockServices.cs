@@ -156,7 +156,6 @@ public static class MockDataStore
         new(4, "ManageUsers",   "إدارة المستخدمين"),
     ];
 
-    // مش readonly عشان نقدر نعدّل بالـ index
     public static List<UserDto> AllUsers =
     [
         new(1, "Admin", "admin@shop.com", "Admin", true, DateTime.Now.AddDays(-60)),
@@ -183,12 +182,10 @@ public static class MockDataStore
 
     public static void SetUserRole(int userId, string roleName)
     {
-        // لما تغيّر الرول، حدّث الـ permissions تبعاً للرول الجديد
         var idx = AllUsers.FindIndex(u => u.Id == userId);
         if (idx < 0) return;
         AllUsers[idx] = AllUsers[idx] with { Role = roleName };
 
-        // حدّث الـ permissions بتاعت الـ role الجديد
         var role = Roles.FirstOrDefault(r => r.Name == roleName);
         if (role != null)
         {
@@ -413,15 +410,23 @@ public class MockUserApiService : IUserApiService
         return Task.FromResult<ApiResponse<AuthResponseDto>?>(new(true, "Registered", fakeUser));
     }
 
-    public Task<ApiResponse<IEnumerable<UserDto>>?> GetUsersAsync() =>
-        Task.FromResult<ApiResponse<IEnumerable<UserDto>>?>(new(true, "OK", MockDataStore.AllUsers));
+    public Task<ApiResponse<IEnumerable<UserDto>>?> GetUsersAsync()
+    {
+        var users = MockDataStore.AllUsers.Select(u =>
+            u with { Permissions = MockDataStore.GetUserPermissions(u.Id) }
+        ).ToList();
+
+        return Task.FromResult<ApiResponse<IEnumerable<UserDto>>?>(new(true, "OK", users));
+    }
 
     public Task<ApiResponse<UserDto>?> GetUserAsync(int id)
     {
         var user = MockDataStore.AllUsers.FirstOrDefault(u => u.Id == id);
-        return Task.FromResult<ApiResponse<UserDto>?>(user is null
-            ? new(false, "Not found", null)
-            : new(true, "OK", user));
+        if (user is null)
+            return Task.FromResult<ApiResponse<UserDto>?>(new(false, "Not found", null));
+
+        var userWithPerms = user with { Permissions = MockDataStore.GetUserPermissions(id) };
+        return Task.FromResult<ApiResponse<UserDto>?>(new(true, "OK", userWithPerms));
     }
 
     public Task<ApiResponse?> UpdateRoleAsync(int userId, UpdateUserRoleDto dto)
@@ -476,11 +481,98 @@ public class MockApiService : IApiService
 // ════════════════════════════════════════════════════════════
 public class MockTokenStorageService : ITokenStorageService
 {
-    private string? _token;
-    public Task SaveTokenAsync(string token) { _token = token; return Task.CompletedTask; }
-    public Task<string?> GetTokenAsync() => Task.FromResult(_token);
-    public Task RemoveTokenAsync() { _token = null; return Task.CompletedTask; }
-    public Task RemoveUserDataAsync() => Task.CompletedTask;
+    private const string TokenKey = "auth_token";
+
+    public Task SaveTokenAsync(string token)
+    {
+        Preferences.Set(TokenKey, token);
+        return Task.CompletedTask;
+    }
+
+    public Task<string?> GetTokenAsync()
+    {
+        var token = Preferences.Get(TokenKey, null);
+        return Task.FromResult<string?>(token);
+    }
+
+    public Task RemoveTokenAsync()
+    {
+        Preferences.Remove(TokenKey);
+        return Task.CompletedTask;
+    }
+
+    public Task RemoveUserDataAsync()
+    {
+        Preferences.Remove(TokenKey);
+        return Task.CompletedTask;
+    }
+}
+
+public class MockAuthStateService : IAuthStateService
+{
+    private readonly ITokenStorageService _tokenStorage;
+    private const string UserKey = "mock_auth_user";
+
+    public MockAuthStateService(ITokenStorageService tokenStorage)
+    {
+        _tokenStorage = tokenStorage;
+    }
+
+    public bool IsLoggedIn { get; private set; }
+    public string? Username { get; private set; }
+    public string? Role { get; private set; }
+    public List<string> Permissions { get; private set; } = new();
+    public int UserId { get; private set; }
+    public bool IsAdmin => Role == "Admin";
+
+    public void SetUser(AuthResponseDto authResponse, int userId)
+    {
+        IsLoggedIn = true;
+        Username = authResponse.Username;
+        Role = authResponse.Role;
+        Permissions = authResponse.Permissions;
+        UserId = userId;
+
+        // احفظ في Preferences بدل SecureStorage
+        var json = System.Text.Json.JsonSerializer.Serialize(authResponse);
+        Preferences.Set(UserKey, json);
+        Preferences.Set("mock_user_id", userId);
+    }
+
+    public void ClearUser()
+    {
+        IsLoggedIn = false;
+        Username = null;
+        Role = null;
+        Permissions = new();
+        UserId = 0;
+        Preferences.Remove(UserKey);
+        Preferences.Remove("mock_user_id");
+    }
+
+    public async Task InitializeAsync()
+    {
+        var json = Preferences.Get(UserKey, null);
+        if (string.IsNullOrWhiteSpace(json)) return;
+
+        var user = System.Text.Json.JsonSerializer.Deserialize<AuthResponseDto>(json);
+        if (user == null) return;
+
+        var token = await _tokenStorage.GetTokenAsync();
+        if (string.IsNullOrWhiteSpace(token)) return;
+
+        IsLoggedIn = true;
+        Username = user.Username;
+        Role = user.Role;
+        Permissions = user.Permissions;
+        UserId = Preferences.Get("mock_user_id", 0);
+
+        // حدّث الـ MockSession
+        MockSession.CurrentUserId = UserId;
+    }
+
+    public bool HasPermission(string permission) =>
+        IsAdmin || Permissions.Contains(permission);
 }
 
 
